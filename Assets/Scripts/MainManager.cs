@@ -11,6 +11,8 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+
+    public Text HighScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -35,6 +37,12 @@ public class MainManager : MonoBehaviour
                 brick.PointValue = pointCountArray[i];
                 brick.onDestroyed.AddListener(AddPoint);
             }
+        }
+        if (SessionManager.Instance.highScores.Capacity == 0) {
+            HighScoreText.text = "Best Score : NONE : 0";
+        } else {
+            HighScore highest = SessionManager.Instance.highScores[SessionManager.Instance.highScores.Capacity - 1];
+            HighScoreText.text = "Best Score : " + highest.playerName + " : " + highest.score;
         }
     }
 
@@ -72,5 +80,10 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        if (SessionManager.Instance.highScores.Capacity < 5 || m_Points > SessionManager.Instance.highScores[SessionManager.Instance.highScores.Capacity - 1].score) {
+            SessionManager.Instance.AddHighScore(new HighScore(SessionManager.Instance.playerName, m_Points));
+        }
+        HighScore highest = SessionManager.Instance.highScores[SessionManager.Instance.highScores.Capacity - 1];
+        HighScoreText.text = "Best Score : " + highest.playerName + " : " + highest.score;
     }
 }
